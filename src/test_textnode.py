@@ -2,7 +2,7 @@ import unittest
 
 from textnode import (
     TextNode,
-    text_node_to_html_node, 
+    text_node_to_html_node,
     text_type_text, 
     text_type_bold, 
     text_type_italic, 
@@ -12,6 +12,11 @@ from textnode import (
 
 
 from htmlnode import LeafNode
+
+from inline_markdown import (
+    extract_markdown_links,
+    extract_markdown_images
+)
 
 
 class TestTextNode(unittest.TestCase):
@@ -81,7 +86,6 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, "")
         self.assertEqual(html_node.props, {"src":"https://www.boot.dev", "alt":"This is a text node"})
-
 
 if __name__ == "__main__":
     unittest.main()

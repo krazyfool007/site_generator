@@ -1,4 +1,5 @@
 from  htmlnode import LeafNode
+import re
 
 text_type_text = "text"
 text_type_bold = "bold"
