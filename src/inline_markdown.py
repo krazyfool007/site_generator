@@ -35,16 +35,25 @@ def extract_markdown_images(text: str) -> list:
 def extract_markdown_links(text: str) -> list:
     return re.findall(r"\[(.*?)\]\((.*?)\)", text)
 
+def to_textnode(sections: list, text_type: str, extracts: list) -> list:
+    textnodes = []
+    for section in sections:
+        if section.strip():
+            textnodes.append(TextNode(section, text_type_text))
+            
+        if extracts:
+            alt_text, url = extracts.pop(0)
+            textnodes.append(TextNode(alt_text, text_type, url))  
+
+    return textnodes
 
 def split_nodes_images(old_nodes: list) -> list:
     new_nodes = []
-    
     
     for node in old_nodes:
         # Check the node for any images and store them in an array of tuples.
         images = extract_markdown_images(node.text)
 
-        
         # If we don't find any images in the node, append it and move to the next node.
         if not images:
             new_nodes.append(node)
@@ -61,17 +70,34 @@ def split_nodes_images(old_nodes: list) -> list:
             sections = new_sections
 
         # Convert split sections into TextNodes if they aren't empty, add any images as you go
-        for section in sections:
-            if section.strip():
-                new_nodes.append(TextNode(section, text_type_text))
-            
-            if images:
-                alt_text, url = images.pop(0)
-                new_nodes.append(TextNode(alt_text, text_type_image, url))
-
+        new_nodes.extend(to_textnode(sections, text_type_image, images))
 
 
     return new_nodes
 
 def split_nodes_links(old_nodes):
-    pass
+    new_nodes = []
+    
+    for node in old_nodes:
+        # Check the node for any images and store them in an array of tuples.
+        links = extract_markdown_links(node.text)
+
+        # If we don't find any images in the node, append it and move to the next node.
+        if not links:
+            new_nodes.append(node)
+            continue
+
+        sections = [node.text]
+        
+        # This next section takes in the text from the TextNode and splits it up based on the images found.
+        for alt_text, url in links:
+            new_sections = []
+            for section in sections:
+                split_results = section.split(f"[{alt_text}]({url})", 1)
+                new_sections.extend(split_results)
+            sections = new_sections
+
+        # Convert split sections into TextNodes if they aren't empty, add any images as you go
+        new_nodes.extend(to_textnode(sections, text_type_link, links))
+
+    return new_nodes

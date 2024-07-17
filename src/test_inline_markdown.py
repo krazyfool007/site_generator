@@ -126,6 +126,36 @@ class TestSplitNodesImages(unittest.TestCase):
         ]
         self.assertEqual(results, expected_results)
 
+class TestSplitNodesLinks(unittest.TestCase):
+    
+    def test_single_link_split(self):
+        node = TextNode("This is text with a link [to boot dev](https://www.boot.dev)",text_type_text)
+        results = split_nodes_links([node])
+        expected_results = [
+            TextNode("This is text with a link ", text_type_text),
+            TextNode("to boot dev", text_type_link, "https://www.boot.dev")
+        ]
+        self.assertEqual(results, expected_results)
+
+    def test_links_only(self):
+        node = TextNode("[to boot dev](https://www.boot.dev)  [to boot dev](https://www.boot.dev)",text_type_text)
+        results = split_nodes_links([node])
+        expected_results = [
+            TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
+            TextNode("to boot dev", text_type_link, "https://www.boot.dev")
+        ]
+        self.assertEqual(results, expected_results)
+
+    def test_links_first(self):
+        node = TextNode("[to boot dev](https://www.boot.dev) This is text with a link [to boot dev](https://www.boot.dev)",text_type_text)
+        results = split_nodes_links([node])
+        expected_results = [
+            TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
+            TextNode(" This is text with a link ", text_type_text),
+            TextNode("to boot dev", text_type_link, "https://www.boot.dev")
+        ]
+        self.assertEqual(results, expected_results)
+
     
 
 
