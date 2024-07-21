@@ -1,5 +1,7 @@
-...................................................
+......................................................
 ----------------------------------------------------------------------
-Ran 51 tests in 0.002s
+Ran 54 tests in 0.002s
 
 OK
+ParentNode(div, children: [ParentNode(h1, children: [LeafNode(Tag: None, Value: This is a heading, Props: None)], {}), ParentNode(p, children: [LeafNode(Tag: None, Value: This is a paragraph of text. It has some , Props: None), LeafNode(Tag: b, Value: bold, Props: None), LeafNode(Tag: None, Value:  and , Props: None), LeafNode(Tag: i, Value: italic, Props: None), LeafNode(Tag: None, Value:  words inside, Props: None)], {}), ParentNode(ul, children: [ParentNode(li, children: [LeafNode(Tag: None, Value: This is the first list item in a list block, Props: None)], {}), ParentNode(li, children: [LeafNode(Tag: None, Value: This is a list item, Props: None)], {}), ParentNode(li, children: [LeafNode(Tag: None, Value: This is another list item, Props: None)], {})], {})], {})
+ParentNode(div, children: [ParentNode(h1, children: [LeafNode(Tag: None, Value: This is a heading, Props: None)], {}), ParentNode(p, children: [LeafNode(Tag: None, Value: This is a paragraph of text. It has some , Props: None), LeafNode(Tag: b, Value: bold, Props: None), LeafNode(Tag: None, Value:  and , Props: None), LeafNode(Tag: i, Value: italic, Props: None), LeafNode(Tag: None, Value:  words inside, Props: None)], {}), ParentNode(ul, children: [ParentNode(li, children: [LeafNode(Tag: None, Value: This is the first list item in a list block, Props: None)], {}), ParentNode(li, children: [LeafNode(Tag: None, Value: This is a list item, Props: None)], {}), ParentNode(li, children: [LeafNode(Tag: None, Value: This is another list item, Props: None)], {})], {})], {})

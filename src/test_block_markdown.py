@@ -6,7 +6,10 @@ from block_markdown import (
     markdown_to_html_node,
     make_quote_node,
     make_code_node,
-    make_code_heading,
+    make_heading_node,
+    make_paragraph_node,
+    make_unordered_list_node,
+    make_ordered_list_node,
     block_type_paragragh,
     block_type_heading,
     block_type_code,
@@ -86,8 +89,27 @@ class TestBlockToBlockType(unittest.TestCase):
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
     def test_simple_markdown_test(self):
-        markdown = "> Quote 1\n> Quote 2\n> Quote 3"
-        markdown_to_html_node(markdown)
+        markdown = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
+        results = markdown_to_html_node(markdown)
+        
+        expected_results = ParentNode("div",[
+            ParentNode("h1",[
+                LeafNode(None,"This is a heading")
+            ]),
+            ParentNode("p",[
+                LeafNode(None,"This is a paragraph of text. It has some "),
+                LeafNode("b", "bold"),
+                LeafNode(None," and "),
+                LeafNode("i", "italic"),
+                LeafNode(None, " words inside")
+            ]),
+            ParentNode("ul",[
+                ParentNode('li', [LeafNode(None,"This is the first list item in a list block")]),
+                ParentNode('li', [LeafNode(None,"This is a list item")]),
+                ParentNode('li', [LeafNode(None,"This is another list item")])
+            ])
+        ])
+        self.assertEqual(results, expected_results)
 
 class TestMarkdownToHTMLNodeHelpers(unittest.TestCase):
     def test_make_code_node(self):
@@ -102,12 +124,49 @@ class TestMarkdownToHTMLNodeHelpers(unittest.TestCase):
         expected_results = ParentNode("blockquote", [LeafNode(None,"Quote number 1\nQuote number 2\nQuote number 3")])
         self.assertEqual(results, expected_results)
 
-    def test_make_code_heading(self):
+    def test_make_heading(self):
         markdown = "### Heading 3"
-        results = make_code_heading(markdown)
+        results = make_heading_node(markdown)
         expected_results = ParentNode("h3", [LeafNode(None, "Heading 3")])
         self.assertEqual(results, expected_results)
-    
+
+    def test_make_paragraph(self):
+        markdown = "This is a paragraph of text. It has some **bold** and *italic* words inside"
+        results = make_paragraph_node(markdown)
+        expected_results = ParentNode("p", [
+            LeafNode(None, "This is a paragraph of text. It has some "), 
+            LeafNode("b", "bold"), 
+            LeafNode(None, " and "), 
+            LeafNode('i', "italic"), 
+            LeafNode(None," words inside")])
+        self.assertEqual(results,expected_results)
+
+    def test_make_unordered_list(self):
+        markdown = "- Bullet point one\n* Bullet point two"
+        results = make_unordered_list_node(markdown)
+        expected_results = ParentNode("ul",[
+            ParentNode('li', [
+                LeafNode(None, "Bullet point one")
+            ]),
+            ParentNode('li', [
+                LeafNode(None, "Bullet point two")
+            ])
+        ])
+        self.assertEqual(results, expected_results)
+
+    def test_make_ordered_list(self):
+        markdown = "1. Bullet point one\n2. Bullet point two"
+        results = make_ordered_list_node(markdown)
+        expected_results = ParentNode("ol",[
+            ParentNode('li', [
+                LeafNode(None, "Bullet point one")
+            ]),
+            ParentNode('li', [
+                LeafNode(None, "Bullet point two")
+            ])
+        ])
+        self.assertEqual(results, expected_results)
+
 
 if __name__ == "__main__":
     unittest.main()

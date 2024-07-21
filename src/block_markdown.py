@@ -99,18 +99,23 @@ def markdown_to_html_node(markdown:str) -> HTMLNode:
 
             # Heading Type Node
             case "heading":
-                block_nodes.append(make_code_heading(block))
+                block_nodes.append(make_heading_node(block))
             
             # Paragraph Type Node
             case "paragraph":
-                pass
+                block_nodes.append(make_paragraph_node(block))
 
-
+            # Ordered List Type Node
+            case "ordered list":
+                block_nodes.append(make_ordered_list_node(block))
             
+            # Unordered List Type Node
+            case "unordered list":
+                block_nodes.append(make_unordered_list_node(block))
 
+            # Default case to catch invalid types
             case _:
                 continue
-
 
     return ParentNode("div", block_nodes)
 
@@ -135,11 +140,11 @@ def make_code_node(block:str) -> ParentNode:
 
 
 # Generates a Heading node based on number of #
-def make_code_heading(block:str) -> ParentNode:
-    #Check number of hash's to determine header level
+def make_heading_node(block:str) -> ParentNode:
+    # Check number of hash's to determine header level
     hash_count = len(block) - len(block.lstrip("#"))
 
-    #Are there too few or too many?
+    # Are there too few or too many?
     if hash_count < 1 or hash_count > 6:
         raise ValueError("Invalid heading level")
     
@@ -147,5 +152,42 @@ def make_code_heading(block:str) -> ParentNode:
     node = ParentNode(f"h{hash_count}", children)
     return node
 
+# Generate a Paragraph Node
 def make_paragraph_node(block:str) -> ParentNode:
-    pass
+    children = generate_children(block)
+    node = ParentNode("p",children)
+    return node
+
+# Generate an unordered list node with correct nesting
+def make_unordered_list_node(block:str) -> ParentNode:
+    parents = []
+
+    # Build a list of all the lines in the list, stripping the markdown characters and whitespace
+    list_items = [line.lstrip("*- ").strip() for line in block.split("\n")]
+
+    # Interate throw this list and generate ParentNode objects for each.
+    for item in list_items:
+
+        # Take the striped list item and generate the LeafNodes from the text
+        parents.append(ParentNode("li",generate_children(item)))
+
+    node = ParentNode("ul", parents)
+    
+    return node
+
+# Generate an ordered list node with correct nesting
+def make_ordered_list_node(block:str) -> ParentNode:
+    parents = []
+
+    # Build a list of all the lines in the list, stripping the markdown characters and whitespace
+    list_items = [line[3:].strip() for line in block.split("\n")]
+
+    # Interate throw this list and generate ParentNode objects for each.
+    for item in list_items:
+
+        # Take the striped list item and generate the LeafNodes from the text
+        parents.append(ParentNode("li",generate_children(item)))
+
+    node = ParentNode("ol", parents)
+    
+    return node

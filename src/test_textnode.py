@@ -45,8 +45,8 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(node, node2)
 
     def test_repr(self):
-        node = TextNode("This is a text node", text_type_italic, "https://www.boot.dev")
-        self.assertEqual("TextNode(This is a text node, italic, https://www.boot.dev)", repr(node))
+        node = TextNode("This is a text node ", text_type_italic, "https://www.boot.dev")
+        self.assertEqual("TextNode(This is a text node , italic, https://www.boot.dev)", repr(node))
 
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
