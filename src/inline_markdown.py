@@ -10,6 +10,24 @@ text_type_link
 
 import re
 
+def extract_markdown_images(text: str) -> list:
+    return re.findall(r"!+\[(.*?)\]\((.*?)\)", text)
+
+def extract_markdown_links(text: str) -> list:
+    return re.findall(r"\[(.*?)\]\((.*?)\)", text)
+
+def to_textnode(sections: list, text_type: str, extracts: list) -> list:
+    textnodes = []
+    for section in sections:
+        if section.strip() and section != " ":
+            textnodes.append(TextNode(section, text_type_text))
+            
+        if extracts:
+            alt_text, url = extracts.pop(0)
+            textnodes.append(TextNode(alt_text, text_type, url))  
+
+    return textnodes
+
 def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: str) -> list:
     new_nodes = []
 
@@ -28,24 +46,6 @@ def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: str) -> li
                         new_nodes.append(TextNode(split_node[i], text_type))
                                
     return new_nodes
-
-def extract_markdown_images(text: str) -> list:
-    return re.findall(r"!+\[(.*?)\]\((.*?)\)", text)
-
-def extract_markdown_links(text: str) -> list:
-    return re.findall(r"\[(.*?)\]\((.*?)\)", text)
-
-def to_textnode(sections: list, text_type: str, extracts: list) -> list:
-    textnodes = []
-    for section in sections:
-        if section.strip():
-            textnodes.append(TextNode(section, text_type_text))
-            
-        if extracts:
-            alt_text, url = extracts.pop(0)
-            textnodes.append(TextNode(alt_text, text_type, url))  
-
-    return textnodes
 
 def split_nodes_images(old_nodes: list) -> list:
     new_nodes = []
@@ -101,3 +101,12 @@ def split_nodes_links(old_nodes):
         new_nodes.extend(to_textnode(sections, text_type_link, links))
 
     return new_nodes
+
+def text_to_textnode(text: str):
+    nodes = [TextNode(text, text_type_text)]
+    nodes = split_nodes_delimiter(nodes,"**", text_type_bold)
+    nodes = split_nodes_delimiter(nodes, "*", text_type_italic)
+    nodes = split_nodes_delimiter(nodes, "`", text_type_code)
+    nodes = split_nodes_images(nodes)
+    nodes = split_nodes_links(nodes)
+    return nodes

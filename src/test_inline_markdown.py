@@ -14,7 +14,9 @@ from inline_markdown import (
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_images,
-    split_nodes_links
+    split_nodes_links,
+    text_to_textnode
+    
 )
 
 class TestInlinemarkdown(unittest.TestCase):
@@ -156,7 +158,39 @@ class TestSplitNodesLinks(unittest.TestCase):
         ]
         self.assertEqual(results, expected_results)
 
+class TestTextToTextNode(unittest.TestCase):
     
+    def test_text_with_all_types(self):
+        node = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        results = text_to_textnode(node)
+
+        expected_results = [
+    TextNode("This is ", text_type_text),
+    TextNode("text", text_type_bold),
+    TextNode(" with an ", text_type_text),
+    TextNode("italic", text_type_italic),
+    TextNode(" word and a ", text_type_text),
+    TextNode("code block", text_type_code),
+    TextNode(" and an ", text_type_text),
+    TextNode("obi wan image", text_type_image, "https://i.imgur.com/fJRm4Vk.jpeg"),
+    TextNode(" and a ", text_type_text),
+    TextNode("link", text_type_link, "https://boot.dev"),
+]
+        self.assertEqual(results, expected_results)
+
+    def test_text_no_markdown(self):
+        node = "This is just some plain text"
+        results = text_to_textnode(node)
+        expected_results = [
+            TextNode("This is just some plain text", text_type_text)
+            ]
+        self.assertEqual(results,expected_results)
+
+    def test_text_bad_delimiter(self):
+        node = "This text is in **BOLD did you know that?"
+        with self.assertRaises(Exception) as e:
+            text_to_textnode(node)
+
 
 
 
