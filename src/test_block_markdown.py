@@ -10,6 +10,7 @@ from block_markdown import (
     make_paragraph_node,
     make_unordered_list_node,
     make_ordered_list_node,
+    extract_title,
     block_type_paragragh,
     block_type_heading,
     block_type_code,
@@ -167,6 +168,19 @@ class TestMarkdownToHTMLNodeHelpers(unittest.TestCase):
         ])
         self.assertEqual(results, expected_results)
 
+class TestExtractTitle(unittest.TestCase):
+    def test_with_h1_heading(self):
+        markdown = "# This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
+        results = extract_title(markdown)
+        expected_results = "This is a heading"
+        self.assertEqual(results, expected_results)
+
+    def test_with_no_h1_heading(self):
+        with self.assertRaises(Exception) as e:
+            markdown = "## This is a heading\n\nThis is a paragraph of text. It has some **bold** and *italic* words inside\n\n* This is the first list item in a list block\n* This is a list item\n* This is another list item"
+            results = extract_title(markdown)
+        
+        self.assertEqual(str(e.exception), "No H1 Header found" )
 
 if __name__ == "__main__":
     unittest.main()

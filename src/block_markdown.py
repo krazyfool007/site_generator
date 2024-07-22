@@ -65,7 +65,7 @@ def block_to_block_type(block: str) -> str:
     if all(line.startswith("> ") for line in lines):
         return block_type_quote
     
-    if all(line.startswith(('*','-')) for line in lines):
+    if all(line.startswith(('* ','- ')) for line in lines):
         return block_type_unordered_list
     
     if all(re.match(r"^\d+. ", line) for line in lines):
@@ -163,7 +163,7 @@ def make_unordered_list_node(block:str) -> ParentNode:
     parents = []
 
     # Build a list of all the lines in the list, stripping the markdown characters and whitespace
-    list_items = [line.lstrip("*- ").strip() for line in block.split("\n")]
+    list_items = [line.lstrip("* ").lstrip("- ").strip() for line in block.split("\n")]
 
     # Interate throw this list and generate ParentNode objects for each.
     for item in list_items:
@@ -191,3 +191,15 @@ def make_ordered_list_node(block:str) -> ParentNode:
     node = ParentNode("ol", parents)
     
     return node
+
+# Returns the title from the markdown
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+
+    for block in blocks:
+        if block_to_block_type(block) == block_type_heading:
+            heading = make_heading_node(block)
+            if heading.tag == "h1":
+                return block.lstrip("# ")
+
+    raise Exception("No H1 Header found")

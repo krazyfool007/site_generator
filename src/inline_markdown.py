@@ -36,7 +36,9 @@ def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: str) -> li
             new_nodes.append(node)
         else:
             if node.text.count(delimiter) % 2 != 0:
+                print(f"{node.text} is about to throw an exception")
                 raise Exception("Invalid Markdown Syntax: Unmatched delimiter")
+
             split_node = node.text.split(delimiter)
             for i in range(len(split_node)):
                 if (split_node[i] != ""):
